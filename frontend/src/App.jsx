@@ -1,11 +1,13 @@
-import TestClient from "./TestClient";
-import TestProduct from "./TestProduct";
-import TestService from "./TestService";
-import TestPayment from "./TestPayment";
-import TestInvoice from "./TestInvoice";
+// FILE: frontend/src/App.jsx (Ejemplo)
+
+import Login from './Login'; // Importa el componente
 
 function App() {
-  return <TestInvoice />;
+  return (
+    <div className="App">
+      <Login /> {/* Renderiza el componente de login */}
+    </div>
+  );
 }
 
 export default App;
