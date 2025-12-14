@@ -11,7 +11,7 @@ class StoreInvoiceRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -27,8 +27,8 @@ class StoreInvoiceRequest extends FormRequest
             'status' => ['string', 'required', 'max:100'],
             'total_value' => ['numeric', 'required', 'min:0'],
             //Revisar si estas id son necesarias en los request!!!
-            // 'client_id' => ['required', 'exists:clients,id'],
-            // 'user_id' => ['required', 'exists:users,id'],
+            'client_id' => ['required', 'exists:clients,id'],
+            'user_id' => ['required', 'exists:users,id'],
         ];
     }
 }

@@ -17,7 +17,9 @@ class Invoice extends Model
         "date",
         "type",
         "status",
-        "total_value"
+        "total_value",
+        "client_id",
+        "user_id"
     ];
 
     public function Products(): BelongsToMany
