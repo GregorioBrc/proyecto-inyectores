@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Update;
+
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateClientRequest extends FormRequest
+class UpdateDebtRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,12 +22,10 @@ class UpdateClientRequest extends FormRequest
      */
     public function rules(): array
     {
-        $id = $this->route('client');
-
         return [
-            'name'   => ['required', 'string', 'max:255'],
-            'phone'  => ['nullable', 'string', 'max:20'],
-            'cedula' => ['required', 'string', 'max:20', 'unique:clients,cedula'],
+            'client_id' => ['required', 'exists:clients,id'],
+            'service_id' => ['required', 'exists:services,id'],
+            'pending_balance' => ['required', 'numeric', 'min:0']
         ];
     }
 }

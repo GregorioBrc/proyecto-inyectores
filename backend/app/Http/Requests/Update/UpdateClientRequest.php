@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Update;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateProductRequest extends FormRequest
+class UpdateClientRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,12 +21,12 @@ class UpdateProductRequest extends FormRequest
      */
     public function rules(): array
     {
+        $id = $this->route('client');
+
         return [
-            'name' => ['string', 'required', "max:100"],
-            'description' => ['strong', 'required', "max:500"],
-            'price' => ['numeric', 'required', 'min:0'],
-            'actual_stock' => ['numeric', 'required', 'min:0'],
-            'min_stock' => ['numeric', 'required', 'min:0']
+            'name'   => ['required', 'string', 'max:255'],
+            'phone'  => ['nullable', 'string', 'max:20'],
+            'cedula' => ['required', 'string', 'max:20', 'unique:clients,cedula'],
         ];
     }
 }
