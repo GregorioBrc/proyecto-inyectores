@@ -17,24 +17,19 @@ use App\Http\Controllers\Api\ServiceController;
 |--------------------------------------------------------------------------
 */
 // --------------------------------------------------------------------------
-// 🔓 RUTAS PÚBLICAS (No requieren autenticación)
+// RUTAS PÚBLICAS 
 // --------------------------------------------------------------------------
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 
 // --------------------------------------------------------------------------
-// 🔒 RUTAS PROTEGIDAS POR SANCTUM (Requieren autenticación)
+// RUTAS PRIVADAS 
 // --------------------------------------------------------------------------
 Route::middleware('auth:sanctum')->group(function () {
-
-    // RUTAS DE AUTENTICACIÓN PROTEGIDAS
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/user', [AuthController::class, 'user']); // Obtener el usuario autenticado
+    Route::get('/user', [AuthController::class, 'user']); 
 
-    // RUTAS CRUD PROTEGIDAS
-    // Todas las acciones de estas rutas (index, store, show, update, destroy)
-    // ahora requerirán un usuario autenticado.
     Route::apiResource('clients', ClientController::class);
     Route::apiResource('products', ProductController::class);
     Route::apiResource('services', ServiceController::class);

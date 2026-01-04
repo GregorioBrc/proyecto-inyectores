@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import './index.css';
 import axios from 'axios'; // Importa Axios
+import { AuthProvider } from './context/AuthContext.jsx';
 
 // 1. Establece la URL base del backend de Laravel
 axios.defaults.baseURL = 'http://127.0.0.1:8001';
@@ -12,5 +13,7 @@ axios.defaults.baseURL = 'http://127.0.0.1:8001';
 axios.defaults.withCredentials = true;
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-    <App />
+    <AuthProvider>
+        <App />
+    </AuthProvider>
 );
