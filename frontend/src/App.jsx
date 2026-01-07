@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './pages/Auth/LoginPage';
 import MainLayout from './layouts/MainLayout';
 import ProductsPage from './pages/Inventory/ProductsPage';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Asegúrate de importar tus páginas (o crea archivos temporales si no existen)
 const DashboardPage = () => <div className="p-4 text-2xl font-bold">Bienvenido al Dashboard</div>;
@@ -17,12 +18,14 @@ function App() {
 
         {/* RUTAS PRIVADAS (Envueltas en el Layout) */}
         {/* Usamos path="/" para que sea la base de las privadas */}
-        <Route path="/" element={<MainLayout />}>
-          {/* Al usar index, le decimos que esta es la página por defecto al entrar a "/" */}
-          <Route index element={<Navigate to="/dashboard" />} />
-          <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="clients" element={<ClientsPage />} />
-          <Route path="products" element={<ProductsPage />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<MainLayout />}>
+            {/* Al usar index, le decimos que esta es la página por defecto al entrar a "/" */}
+            <Route index element={<Navigate to="/dashboard" />} />
+            <Route path="dashboard" element={<DashboardPage />} />
+            <Route path="clients" element={<ClientsPage />} />
+            <Route path="products" element={<ProductsPage />} />
+          </Route>
         </Route>
 
         {/* Redirección global si la ruta no existe */}

@@ -1,12 +1,12 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: '/api', // proxy de Vite
+  baseURL: '/api', 
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
   },
-  withCredentials: false // 🔴 CLAVE
+  withCredentials: false 
 });
 
 api.interceptors.request.use((config) => {
