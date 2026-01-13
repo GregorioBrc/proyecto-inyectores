@@ -9,6 +9,7 @@ import MainLayout from "./layouts/MainLayout";
 import ProductsPage from "./pages/Inventory/ProductsPage";
 import ClientsPage from "./pages/Clients/ClientsPage";
 import ServicesPage from "./pages/Services/ServicesPage"
+import InvoicesPage from "./pages/Invoices/InvoicesPage"
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Asegúrate de importar tus páginas (o crea archivos temporales si no existen)
@@ -32,6 +33,7 @@ function App() {
             <Route path="clients" element={<ClientsPage />} />
             <Route path="products" element={<ProductsPage />} />
             <Route path="services" element={<ServicesPage />} />
+            <Route path="invoices" element={<InvoicesPage />} />
           </Route>
         </Route>
 

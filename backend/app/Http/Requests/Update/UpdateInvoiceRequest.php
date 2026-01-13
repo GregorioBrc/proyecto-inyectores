@@ -28,7 +28,7 @@ class UpdateInvoiceRequest extends FormRequest
             'status' => ['string', 'required', 'max:100'],
             'total_value' => ['numeric', 'required', 'min:0'],
             //Revisar si estas id son necesarias en los request!!!
-            // 'client_id' => ['required', 'exists:clients,id'],
+            'client_id' => ['required', 'exists:clients,id'],
             // 'user_id' => ['required', 'exists:users,id'],
         ];
     }
