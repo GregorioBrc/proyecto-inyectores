@@ -1,95 +1,51 @@
-import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import {
-  LayoutDashboard,
-  Users,
-  Package,
-  Wrench,
-  FileText,
-  LogOut,
-  UserCircle,
-  Calculator,
-} from "lucide-react";
+import { Menu } from "lucide-react";
+import Sidebar from "../components/Sidebar";
 
 export default function MainLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  
+  // State to control mobile menu
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const handleLogout = () => {
-    logout(); // Limpia estado y localStorage
-    navigate("/login", { replace: true }); // replace: true evita que el usuario pueda volver atrás
+    logout();
+    navigate("/login", { replace: true });
   };
 
-  const navItems = [
-    {
-      name: "Dashboard",
-      path: "/dashboard",
-      icon: <LayoutDashboard size={20} />,
-    },
-    { name: "Clientes", path: "/clients", icon: <Users size={20} /> },
-    { name: "Inventario", path: "/products", icon: <Package size={20} /> },
-    { name: "Servicios", path: "/services", icon: <Wrench size={20} /> },
-    { name: "Facturación", path: "/invoices", icon: <FileText size={20} /> },
-    { name: "Cierres de Caja", path: "/registerClose", icon: <Calculator size={20} /> },
-  ];
-
   return (
-    <div>
-      {/* SIDEBAR LATERAL */}
-      <aside>
-        <div>
-          <h1>
-            INJECT<span>PRO</span>
-          </h1>
-        </div>
+    <div className="flex min-h-screen bg-gray-50 overflow-x-hidden">
+      {/* SIDEBAR: Passes the state to handle open/close */}
+      <Sidebar 
+        user={user} 
+        onLogout={handleLogout} 
+        isOpen={isSidebarOpen} 
+        setIsOpen={setIsSidebarOpen} 
+      />
 
-        <nav>
-          {navItems.map((item) => (
-            <NavLink key={item.path} to={item.path}>
-              {item.icon}
-              <span>{item.name}</span>
-            </NavLink>
-          ))}
-        </nav>
-
-        {/* PERFIL DE USUARIO Y LOGOUT */}
-        <div>
-          <div>
-            <div>
-              <UserCircle size={20} />
-            </div>
-            <div>
-              <span>{user?.name}</span>
-              <span>{user?.email}</span>
-            </div>
-          </div>
-          <button onClick={handleLogout}>
-            <LogOut size={18} />
-            <span>Cerrar Sesión</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* CONTENIDO PRINCIPAL */}
-      <div>
-        {/* HEADER SUPERIOR */}
-        <header>
-          <div>
-            <div></div>
-            <span>Sistema Activo</span>
+      {/* MAIN CONTENT AREA */}
+      <div className="flex-1 flex flex-col min-w-0">
+        
+        {/* TOP HEADER */}
+        <header className="md:hidden h-16 bg-workshop-dark border-b border-gray-200 flex items-center justify-between px-4 md:px-8 sticky top-0 z-30">
+          <div className="flex items-center gap-4">
+            {/* MOBILE MENU BUTTON (Hidden on Desktop) */}
+            <button 
+              onClick={() => setIsSidebarOpen(true)}
+              className="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+            >
+              <Menu size={24} />
+            </button>
           </div>
 
-          <div>
-            <div>
-              <p>Rol Actual</p>
-              <p>Administrador</p>
-            </div>
-          </div>
         </header>
 
-        {/* ÁREA DE CONTENIDO VARIABLE */}
-        <main>
-          <div>
+        {/* PAGE CONTENT */}
+        <main className="p-4 md:p-8">
+          <div className="max-w-7xl mx-auto">
             <Outlet />
           </div>
         </main>
