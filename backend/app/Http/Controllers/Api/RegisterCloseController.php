@@ -104,5 +104,7 @@ class RegisterCloseController extends Controller
         $registerClose->USD_amount = $USD_amount;
 
         $registerClose->save();
+
+        return new RegisterCloseResource($registerClose);
     }
 }

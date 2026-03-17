@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../../service/api_Authorization";
+import ResumeCreatedRegisterClose from "./ResumeCreatedRegisterClose";
 import { Calendar, ClipboardList, Save, AlertCircle } from "lucide-react";
 
 export default function CreateRegisterClose({ onSuccess }) {
@@ -12,6 +13,7 @@ export default function CreateRegisterClose({ onSuccess }) {
     
     const [errors, setErrors] = useState({});
     const [saving, setSaving] = useState(false);
+    const [registerClose, setRegisterClose] = useState(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -19,7 +21,8 @@ export default function CreateRegisterClose({ onSuccess }) {
         setErrors({});
         
         try {
-            await api.post(`/createRegisterClose`, formData);
+            const response = await api.post(`/createRegisterClose`, formData);
+            setRegisterClose(response.data.data);
             onSuccess?.();
         } catch (err) {
             if (err.response?.status === 422) {
@@ -109,6 +112,17 @@ export default function CreateRegisterClose({ onSuccess }) {
                         </button>
                     </div>
                 </form>
+
+                {/* Renderizar el modal solo si hay datos en registerClose */}
+                {registerClose && (
+                    <ResumeCreatedRegisterClose 
+                        data={registerClose} 
+                        onClose={() => {
+                            setRegisterClose(null); // Cierra el modal
+                            // Opcional: setFormData({ date: today, description: "" }); // Limpia el formulario
+                        }} 
+                    />
+                )}
             </div>
             
         </div>
