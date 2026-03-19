@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../service/api_Authorization";
-import { Users, FileText, AlertTriangle, Package  } from "lucide-react";
-
+import { AlertTriangle, Package, DollarSign, Clock, ArrowRight, TrendingDown } from "lucide-react";
 
 function formatMoney(value) {
   const n = Number(value ?? 0);
@@ -12,36 +11,12 @@ function formatMoney(value) {
   })}`;
 }
 
-function InvoiceStatusPill({ status }) {
-  const normalized = String(status ?? "").toLowerCase();
-  const isPaid = normalized === "pagada";
-  const isPending = normalized === "pendiente";
-
-  const klass = isPaid
-    ? "bg-green-100 text-green-700"
-    : isPending
-      ? "bg-red-100 text-red-700"
-      : "bg-gray-100 text-gray-700";
-
-  return (
-    <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter ${klass}`}>
-      {status ?? "—"}
-    </span>
-  );
-}
-
-
 const defaultSummary = {
-  newCustomers: 0,
-  monthlyInvoices: 0,
   totalDebts: 0,
   lowStockCount: 0,
-  latestCustomers: [],
-  recentInvoices: [],
   topDebts: [],
   lowStockList: [],
 };
-
 
 export default function DashboardPage() {
   const [summary, setSummary] = useState(defaultSummary);
@@ -55,18 +30,18 @@ export default function DashboardPage() {
       setLoading(true);
       setError(null);
       try {
-        
-        const {data} = await api.get("/dashboard");
+        const { data } = await api.get("/dashboard");
         const payload = data?.data ?? data ?? {};
 
         if (!mounted) return;
-
-        
-
         setSummary({ ...defaultSummary, ...payload });
       } catch (err) {
         if (!mounted) return;
-        setError(err?.response?.status === 401 ? "Sesión expirada" : "Error al cargar el dashboard");
+        setError(
+          err?.response?.status === 401
+            ? "Sesión expirada"
+            : "Error al cargar el dashboard"
+        );
       } finally {
         if (mounted) setLoading(false);
       }
@@ -80,247 +55,179 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-        <div className="p-8 text-center font-black animate-pulse text-workshop-red uppercase tracking-widest">
-            Cargando Dashboard...
-        </div>
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-workshop-red space-y-4">
+        <div className="w-10 h-10 border-4 border-workshop-red/30 border-t-workshop-red rounded-full animate-spin" />
+        <span className="font-black uppercase tracking-widest text-sm">
+          Cargando métricas...
+        </span>
+      </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 border-b border-gray-200 pb-6">
         <div>
-          <h2 className="text-2xl md:text-3xl font-black tracking-tighter text-gray-900 uppercase">
-            Workshop <span className="text-workshop-red">Dashboard</span>
+          <h2 className="text-3xl md:text-4xl font-black tracking-tighter text-gray-900 uppercase flex items-center gap-3">
+            Atención <span className="text-workshop-red">Requerida</span>
           </h2>
-          <p className="text-xs md:text-sm text-gray-500 font-medium tracking-tight">
-            Resumen operativo del mes en curso.
+          <p className="text-sm text-gray-500 font-bold tracking-tight uppercase mt-1">
+            Resumen de alertas de inventario y cuentas por cobrar
           </p>
         </div>
         {error && (
-          <div className="text-xs font-black uppercase tracking-widest text-workshop-red">
+          <div className="bg-red-50 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest text-workshop-red border border-red-100 flex items-center gap-2">
+            <AlertTriangle size={14} />
             {error}
           </div>
         )}
       </div>
 
-      {/* KPI Cuadros */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center text-gray-900 shrink-0">
-              <Users size={22} />
-            </div>
-            <div>
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">
-                Nuevos clientes
-              </p>
-              <h4 className="text-2xl font-black text-gray-900 italic leading-none">
-                {summary.newCustomers}
-              </h4>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center text-gray-900 shrink-0">
-              <FileText size={22} />
-            </div>
-            <div>
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">
-                Facturas del mes
-              </p>
-              <h4 className="text-2xl font-black text-gray-900 italic leading-none">
-                {summary.monthlyInvoices}
-              </h4>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between border-l-4">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-workshop-red shrink-0">
-              <AlertTriangle size={22} />
-            </div>
-            <div>
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">
-                Deudas totales
-              </p>
-              <h4 className="text-xl font-black text-workshop-red italic leading-none">
-                {formatMoney(summary.totalDebts)}
-              </h4>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center text-gray-900 shrink-0">
-              <Package size={22} />
-            </div>
-            <div>
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">
-                Bajo stock
-              </p>
-              <h4 className="text-2xl font-black text-gray-900 italic leading-none">
-                {summary.lowStockCount}
-              </h4>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Top Panels */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Ultimos Clientes */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-          <div className="p-5 border-b border-gray-100 flex items-center justify-between">
-            <h3 className="font-black text-gray-900 uppercase tracking-tight">Últimos Clientes</h3>
-            <Link to="/clients" className="text-[10px] font-black text-workshop-red uppercase tracking-widest">
-              Ver todo
-            </Link>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-100">
-                  <th className="px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Cliente</th>
-                  <th className="px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Registro</th>
-                  <th className="px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Cédula</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100 font-bold italic">
-                {summary.latestCustomers.map((c) => (
-                  <tr key={c.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-5 py-4 text-sm text-gray-900 uppercase tracking-tighter font-black">
-                      {c.name}
-                    </td>
-                    <td className="px-5 py-4 text-sm text-gray-500">{c.created_at ?? "—"}</td>
-                    <td className="px-5 py-4 text-sm text-gray-600">{c.cedula ?? "—"}</td>
-                  </tr>
-                ))}
-                {summary.latestCustomers.length === 0 && (
-                  <tr>
-                    <td className="px-5 py-6 text-sm text-gray-400 italic" colSpan={3}>
-                      No hay clientes registrados.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Facturas recientes */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-          <div className="p-5 border-b border-gray-100 flex items-center justify-between">
-            <h3 className="font-black text-gray-900 uppercase tracking-tight">Facturas Recientes</h3>
-            <Link to="/invoices" className="text-[10px] font-black text-workshop-red uppercase tracking-widest">
-              Ver todo
-            </Link>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-100">
-                  <th className="px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Factura</th>
-                  <th className="px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Total</th>
-                  <th className="px-5 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Estado</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100 font-bold italic">
-                {summary.recentInvoices.map((inv) => (
-                  <tr key={inv.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-5 py-4 text-sm text-gray-900 font-black uppercase tracking-tighter">
-                      {`#FACT-${String(inv.id ?? "").padStart(4, "0")}`}
-                    </td>
-                    <td className="px-5 py-4 text-sm text-gray-900 font-black">
-                      {formatMoney(inv.total_value)}
-                    </td>
-                    <td className="px-5 py-4">
-                      <InvoiceStatusPill status={inv.status} />
-                    </td>
-                  </tr>
-                ))}
-                {summary.recentInvoices.length === 0 && (
-                  <tr>
-                    <td className="px-5 py-6 text-sm text-gray-400 italic" colSpan={3}>
-                      No hay facturas registradas.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Panels */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Deudas - Facturas */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-          <div className="p-5 border-b border-gray-100 flex items-center justify-between">
-            <h3 className="font-black text-gray-900 uppercase tracking-tight">Deudas</h3>
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-              Top pendientes
-            </span>
-          </div>
-          <div className="divide-y divide-gray-100">
-            {summary.topDebts.map((d) => {
-              const clientName = d.client_name ?? "Cliente";
-              return (
-                <div key={d.id} className="p-5 flex items-start justify-between gap-4">
-                  <div>
-                    <div className="font-black text-gray-900 uppercase tracking-tighter italic">
-                      {clientName}
-                    </div>
-                    <div className="text-[11px] text-gray-500 font-medium italic">
-                      Fecha: {d.created_at ?? "—"}
-                    </div>
-                  </div>
-                  <div className="font-black text-workshop-red italic">
-                    {formatMoney(d.pending_balance)}
-                  </div>
-                </div>
-              );
-            })}
-            {summary.topDebts.length === 0 && (
-              <div className="p-6 text-sm text-gray-400 italic">No hay deudas registradas.</div>
-            )}
-          </div>
-        </div>
-
-        {/* Inventario Bajo */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-          <div className="p-5 border-b border-gray-100 flex items-center justify-between">
-            <h3 className="font-black text-gray-900 uppercase tracking-tight">Bajo Stock</h3>
-            <Link to="/products" className="text-[10px] font-black text-workshop-red uppercase tracking-widest">
-              Ver todo
-            </Link>
-          </div>
-          <div className="divide-y divide-gray-100">
-            {summary.lowStockList.map((p) => (
-              <div key={p.id} className="p-5 flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <div className="font-black text-gray-900 uppercase tracking-tighter italic truncate">
-                    {p.name}
-                  </div>
-                  <div className="text-[11px] text-gray-500 font-medium italic">
-                    MÍNIMO: {p.min_stock ?? 0} UNITS
-                  </div>
-                </div>
-                <div className="shrink-0 font-black text-workshop-red italic">
-                  Quedan {Number(p.actual_stock ?? 0)}
-                </div>
+      {/* Main Panels Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        {/* PANEL: Deudas Activas */}
+        <div className="bg-white rounded-3xl border border-gray-200 shadow-xl shadow-gray-200/40 overflow-hidden flex flex-col h-[600px]">
+          {/* Header Panel Deudas */}
+          <div className="bg-gray-50 p-6 border-b border-gray-100 flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center text-workshop-red shadow-inner">
+                <DollarSign size={24} />
               </div>
-            ))}
-            {summary.lowStockList.length === 0 && (
-              <div className="p-6 text-sm text-gray-400 italic">No hay productos en bajo stock.</div>
+              <div>
+                <h3 className="font-black text-xl text-gray-900 uppercase tracking-tighter">
+                  Cuentas por Cobrar
+                </h3>
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                  Total pendiente: <span className="text-workshop-red">{formatMoney(summary.totalDebts)}</span>
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/debts"
+              className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-400 hover:text-workshop-red hover:border-workshop-red transition-colors shadow-sm"
+            >
+              <ArrowRight size={18} />
+            </Link>
+          </div>
+
+          {/* Lista Deudas */}
+          <div className="p-6 overflow-y-auto flex-1 bg-white space-y-3">
+            {summary.topDebts.length > 0 ? (
+              summary.topDebts.map((d) => (
+                <div
+                  key={d.id}
+                  className="group bg-white border border-gray-100 hover:border-red-200 p-5 rounded-2xl flex items-center justify-between gap-4 transition-all hover:shadow-md"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-red-50 group-hover:text-workshop-red transition-colors">
+                      <Clock size={18} />
+                    </div>
+                    <div>
+                      <div className="font-black text-gray-900 uppercase tracking-tighter text-sm">
+                        {d.client_name ?? "Cliente Desconocido"}
+                      </div>
+                      <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">
+                        Registrado: {d.created_at ?? "—"}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-black text-lg text-workshop-red">
+                      {formatMoney(d.pending_balance)}
+                    </div>
+                    <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                      Deuda Activa
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center text-center space-y-3 opacity-50">
+                <DollarSign size={48} className="text-gray-300" />
+                <p className="text-sm font-black uppercase tracking-widest text-gray-400">
+                  No hay deudas registradas
+                </p>
+              </div>
             )}
           </div>
         </div>
+
+        {/* PANEL: Inventario Bajo */}
+        <div className="bg-white rounded-3xl border border-gray-200 shadow-xl shadow-gray-200/40 overflow-hidden flex flex-col h-[600px]">
+          {/* Header Panel Inventario */}
+          <div className="bg-gray-50 p-6 border-b border-gray-100 flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center text-orange-600 shadow-inner">
+                <Package size={24} />
+              </div>
+              <div>
+                <h3 className="font-black text-xl text-gray-900 uppercase tracking-tighter">
+                  Inventario Crítico
+                </h3>
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                  Productos en alerta: <span className="text-orange-600">{summary.lowStockCount} ítems</span>
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/products"
+              className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-400 hover:text-orange-600 hover:border-orange-600 transition-colors shadow-sm"
+            >
+              <ArrowRight size={18} />
+            </Link>
+          </div>
+
+          {/* Lista Inventario */}
+          <div className="p-6 overflow-y-auto flex-1 bg-white space-y-3">
+            {summary.lowStockList.length > 0 ? (
+              summary.lowStockList.map((p) => {
+                const stock = Number(p.actual_stock ?? 0);
+                const min = Number(p.min_stock ?? 0);
+                // Si el stock es 0, lo ponemos en rojo, si no en naranja
+                const isZero = stock <= 0;
+
+                return (
+                  <div
+                    key={p.id}
+                    className="group bg-white border border-gray-100 hover:border-orange-200 p-5 rounded-2xl flex items-center justify-between gap-4 transition-all hover:shadow-md"
+                  >
+                    <div className="flex items-center gap-4 min-w-0">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-colors ${isZero ? 'bg-red-50 text-red-500' : 'bg-orange-50 text-orange-500'}`}>
+                        <TrendingDown size={18} />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-black text-gray-900 uppercase tracking-tighter text-sm truncate">
+                          {p.name}
+                        </div>
+                        <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">
+                          Stock Mínimo Ideal: {min}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <div className={`font-black text-lg ${isZero ? 'text-red-600' : 'text-orange-600'}`}>
+                        {stock} und.
+                      </div>
+                      <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                        Disponibles
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center text-center space-y-3 opacity-50">
+                <Package size={48} className="text-gray-300" />
+                <p className="text-sm font-black uppercase tracking-widest text-gray-400">
+                  Inventario en niveles óptimos
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
       </div>
     </div>
   );

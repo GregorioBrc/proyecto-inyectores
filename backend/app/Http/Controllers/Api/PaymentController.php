@@ -71,6 +71,12 @@ class PaymentController extends Controller
                             
             $payment_amount = $request->amount;
 
+            if($request->currency == "USD"){
+                $payment_amount = $payment_amount*$request->reference;
+            } else if ($request->currency == "VES"){
+                $payment_amount = $payment_amount/$request->reference;
+            }
+
             foreach ($invoices as $invoice) {
                 if ($payment_amount <= 0) break; 
 
@@ -78,10 +84,11 @@ class PaymentController extends Controller
                 if (!$debt) continue; 
 
                 $amount_to_pay = min($payment_amount, $debt->pending_balance);
+                
 
                 Payment::create([
                     'date'        => $request->date,
-                    'amount'      => $amount_to_pay,
+                    'amount'      => $request->amount,
                     'currency'    => $request->currency, 
                     'reference'   => $request->reference, 
                     'description' => $request->description, 
@@ -98,8 +105,15 @@ class PaymentController extends Controller
                 }
             }
 
+            if($request->currency == "USD"){
+                $payment_amount = $payment_amount/$request->reference;
+            } else if ($request->currency == "VES"){
+                $payment_amount = $payment_amount*$request->reference;
+            }
+
             return response()->json([
-                'change' => $payment_amount
+                'change' => $payment_amount,
+                'currency' => $request->currency
             ]);
         });
     }

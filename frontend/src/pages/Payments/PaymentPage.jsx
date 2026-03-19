@@ -10,11 +10,13 @@ export default function PaymentPage() {
     const [totalDebt, setTotalDebt] = useState(null);
     const [readyForPayment, setReadyForPayment] = useState(false);
     const [change, setChange] = useState(null);
+    const [currency, setCurrency] = useState("");
     const [error, setError] = useState("");
 
     const handleClientSelect = (client) => {
         setError("");
         setChange(null);
+        setCurrency("");
         setSelectedClient(client);
         handleDebtClient(client);
         setClientSearchText("");
@@ -23,6 +25,7 @@ export default function PaymentPage() {
     const handleClientClear = () => {
         setError("");
         setChange(null);
+        setCurrency("");
         setSelectedClient(null);
         setClientSearchText("");
         setTotalDebt(null);
@@ -48,8 +51,10 @@ export default function PaymentPage() {
         try {
             const response = await api.post('/paymentClient', paymentData);
             const changeAmount = response.data?.change ?? response.data.change  ?? 0;
+            const currencyChange = response.data?.currency ?? response.data.currency ?? "COP";
 
             setChange((changeAmount));
+            setCurrency(currencyChange);
             setReadyForPayment(false);
             
         } catch (e) {
@@ -154,7 +159,7 @@ export default function PaymentPage() {
                             </div>
                             <div className="space-y-1 mb-6">
                                 <p className="text-[10px] font-black text-green-600/60 uppercase tracking-widest">Vuelto</p>
-                                <p className="text-3xl font-black italic text-green-800">${change.toFixed(2)}</p>
+                                <p className="text-3xl font-black italic text-green-800">{currency} {change.toFixed(2)}</p>
                             </div>
                             <button 
                                 onClick={() => { 

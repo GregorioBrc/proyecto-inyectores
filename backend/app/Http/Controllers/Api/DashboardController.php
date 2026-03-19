@@ -33,12 +33,10 @@ class DashboardController extends Controller
         $recentInvoices = Invoice::orderByDesc('id')->limit(5)->get();
         $lowStockList = Product::whereColumn('actual_stock', '<=', 'min_stock')
             ->orderBy('actual_stock', 'asc')
-            ->limit(3)
             ->get();
     
         $topDebts = Debt::with('Client')
             ->orderByDesc('pending_balance')
-            ->limit(3)
             ->get()
             ->map(function ($debt) {
                 return [
